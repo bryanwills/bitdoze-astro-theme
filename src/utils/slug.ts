@@ -14,7 +14,7 @@ type ContentEntryLike = {
   id?: string;
   slug?: string;
   data: {
-    canonical?: string;
+    slug?: string;
   };
 };
 
@@ -24,18 +24,20 @@ export function entryIdToSlug(entry: { id?: string; slug?: string }): string {
   return lastSegment.replace(/\.(md|mdx)$/i, "");
 }
 
+export function entryIdToPath(entry: { id?: string; slug?: string }): string {
+  const id = entry.slug || entry.id || "";
+  return id
+    .replace(/\.(md|mdx)$/i, "")
+    .split("/")
+    .filter(Boolean)
+    .map(slugify)
+    .join("/");
+}
+
 export function getPostSlug(post: ContentEntryLike): string {
-  const fallbackSlug = entryIdToSlug(post);
-
-  if (!post.data.canonical) {
-    return fallbackSlug;
-  }
-
-  try {
-    return new URL(post.data.canonical).pathname.split("/").filter(Boolean).pop() || fallbackSlug;
-  } catch {
-    return fallbackSlug;
-  }
+  return post.data.slug
+    ? entryIdToPath({ id: post.data.slug })
+    : entryIdToPath(post);
 }
 
 export function getPostUrl(post: ContentEntryLike): string {

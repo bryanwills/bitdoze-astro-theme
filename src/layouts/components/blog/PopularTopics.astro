@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets";
-import { getCollection } from "astro:content";
 import { getPostUrl, slugify } from "@utils/slug";
+import { getPublishedPosts, sortPostsByDate } from "@utils/content";
 
 export interface Props {
     tags?: string[];
@@ -11,14 +11,7 @@ export interface Props {
 const { tags = ["Jamstack", "astro", "carrd"], postsPerTag = 5 } = Astro.props;
 
 // Get all posts
-const allPosts = await getCollection("posts");
-
-// Sort posts by date (most recent first)
-const sortedPosts = allPosts.sort((a, b) => {
-    const dateA = new Date(a.data.date || "");
-    const dateB = new Date(b.data.date || "");
-    return dateB.getTime() - dateA.getTime();
-});
+const sortedPosts = sortPostsByDate(await getPublishedPosts());
 
 // Get posts for each tag
 const tagPosts = tags.map((tag) => ({
@@ -76,7 +69,7 @@ const tagPosts = tags.map((tag) => ({
                                         </div>
                                     </div>
                                     <div class="grow min-w-0">
-                                        <h4 class="text-sm font-medium text-gray-800 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
+                                        <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
                                             {post.data.title}
                                         </h4>
                                         {post.data.date && (

@@ -5,16 +5,18 @@ import mdx from '@astrojs/mdx';
 import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
 
-const sitemapFilter = (page) => !page.includes('/page/') && !page.includes('/search');
+/** @param {string} page */
+const sitemapFilter = (page) =>
+  !page.includes('/page/') &&
+  !page.includes('/search') &&
+  !page.includes('/tags/') &&
+  !page.includes('/404');
 
 // https://astro.build/config
 export default defineConfig({
   // Set the site URL for production
-  site: 'https://www.bitdoze.com',
+  site: process.env.SITE_URL || 'https://www.bitdoze.com',
   
-  // Base path (set to '/' for most sites)
-  base: '/',
-
   // Configure Vite plugins and server settings
   vite: {
     plugins: [
@@ -30,7 +32,6 @@ export default defineConfig({
       filter: sitemapFilter,
       changefreq: 'weekly',
       priority: 0.7,
-      lastmod: new Date(),
     }),
   ],
   

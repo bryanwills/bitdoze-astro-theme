@@ -7,12 +7,8 @@ import config from "@config/config.json";
 const title = "Contact Us";
 const { address, email, phone } = config.contactinfo;
 const { contact_form_action } = config.params;
-
-// Function to convert markdown to HTML (simplified version)
-const markdownify = (content) => {
-  if (!content) return "";
-  return content;
-};
+const formConfigured = contact_form_action !== "#";
+const hasContactInfo = Boolean(address || email || phone);
 ---
 
 <Layout
@@ -20,13 +16,14 @@ const markdownify = (content) => {
   description="Get in touch with us"
 >
   <section class="section py-12">
-    <div class="container max-w-5xl mx-auto px-4">
+    <div class="container max-w-5xl mx-auto">
       <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-10 text-center">{title}</h1>
       <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
         <div class="md:col-span-4">
           <p class="mb-8 text-2xl font-bold text-gray-900 dark:text-white">Contact Info</p>
-          <ul class="flex flex-col space-y-8">
-            <li>
+          {hasContactInfo ? (
+            <ul class="flex flex-col space-y-8">
+            {address && <li>
               <div class="flex text-gray-900 dark:text-white items-center text-xl">
                 <Icon
                   name="mdi:card-account-details-star-outline"
@@ -35,8 +32,8 @@ const markdownify = (content) => {
                 <p class="font-semibold">Address</p>
               </div>
               <p class="mt-2 leading-5 pl-8 text-gray-700 dark:text-gray-300">{address}</p>
-            </li>
-            <li>
+            </li>}
+            {email && <li>
               <div class="flex text-gray-900 dark:text-white items-center text-xl">
                 <Icon name="mdi:email" class="mr-3 text-blue-600 dark:text-blue-400 text-2xl" />
                 <p class="font-semibold">Email</p>
@@ -44,8 +41,8 @@ const markdownify = (content) => {
               <p class="mt-2 leading-5 pl-8 text-gray-700 dark:text-gray-300">
                 <a href={`mailto:${email}`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{email}</a>
               </p>
-            </li>
-            <li>
+            </li>}
+            {phone && <li>
               <div class="flex text-gray-900 dark:text-white items-center text-xl">
                 <Icon name="mdi:phone" class="mr-3 text-blue-600 dark:text-blue-400 text-2xl" />
                 <p class="font-semibold">Phone</p>
@@ -53,8 +50,13 @@ const markdownify = (content) => {
               <p class="mt-2 leading-5 pl-8 text-gray-700 dark:text-gray-300">
                 <a href={`tel:${phone.replace(/\s+/g, '')}`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{phone}</a>
               </p>
-            </li>
-          </ul>
+            </li>}
+            </ul>
+          ) : (
+            <p class="text-gray-600 dark:text-gray-300">
+              Add your public contact details in <code>src/config/config.json</code>.
+            </p>
+          )}
         </div>
         <div class="md:col-span-8">
           <form
@@ -63,15 +65,22 @@ const markdownify = (content) => {
             action={contact_form_action}
             data-astro-reload
           >
+            {!formConfigured && (
+              <p class="mb-5 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200" role="status">
+                Contact form delivery is not configured yet. Set a form endpoint in <code>src/config/config.json</code>.
+              </p>
+            )}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
               <div>
                 <label class="block text-gray-700 dark:text-gray-300 mb-2" for="name">
                   Name <span class="text-red-600">*</span>
                 </label>
                 <input
+                  id="name"
                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   name="name"
                   type="text"
+                  autocomplete="name"
                   required
                 />
               </div>
@@ -80,9 +89,11 @@ const markdownify = (content) => {
                   Email <span class="text-red-600">*</span>
                 </label>
                 <input
+                  id="email"
                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   name="email"
                   type="email"
+                  autocomplete="email"
                   required
                 />
               </div>
@@ -90,6 +101,7 @@ const markdownify = (content) => {
             <div class="mb-4">
               <label class="block text-gray-700 dark:text-gray-300 mb-2" for="subject">Subject</label>
               <input 
+                id="subject"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" 
                 name="subject" 
                 type="text" 
@@ -100,6 +112,7 @@ const markdownify = (content) => {
                 Message <span class="text-red-600">*</span>
               </label>
               <textarea 
+                id="message"
                 name="message" 
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" 
                 rows="4"
@@ -107,7 +120,13 @@ const markdownify = (content) => {
               ></textarea>
             </div>
             <div>
-              <button class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-300 font-medium">Submit Now</button>
+              <button
+                type="submit"
+                disabled={!formConfigured}
+                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-md transition-colors duration-300 font-medium"
+              >
+                {formConfigured ? "Submit Now" : "Form Not Configured"}
+              </button>
             </div>
           </form>
         </div>

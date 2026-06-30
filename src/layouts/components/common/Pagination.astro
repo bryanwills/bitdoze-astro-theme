@@ -56,13 +56,13 @@ const getPageUrl = (pageNum: number) => {
 
 {totalPages > 1 && (
   <nav aria-label="Pagination" class="my-8">
-    <ul class="flex justify-center items-center space-x-2">
+    <ul class="flex flex-wrap justify-center items-center gap-2">
       <!-- Previous page button -->
       <li>
         {prevUrl ? (
           <a 
             href={prevUrl} 
-            class="flex items-center justify-center px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            class="flex min-w-11 min-h-11 items-center justify-center px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             aria-label="Go to previous page"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -107,7 +107,7 @@ const getPageUrl = (pageNum: number) => {
         {nextUrl ? (
           <a 
             href={nextUrl} 
-            class="flex items-center justify-center px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            class="flex min-w-11 min-h-11 items-center justify-center px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             aria-label="Go to next page"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

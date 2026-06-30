@@ -3,7 +3,7 @@ import Layout from '@layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
 ---
 
-<Layout title="404 - Page Not Found" description="The page you're looking for doesn't exist.">
+<Layout title="404 - Page Not Found" description="The page you're looking for doesn't exist." noindex={true}>
   <div class="w-full py-16 flex flex-col items-center justify-center text-center px-4">
     <div class="max-w-md">
       <Icon name="mdi:alert-circle-outline" class="w-24 h-24 text-blue-600 dark:text-blue-400 mx-auto mb-6" />

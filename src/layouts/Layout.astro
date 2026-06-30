@@ -23,6 +23,15 @@ interface Props {
   };
   tags?: string[];
   categories?: string[];
+  breadcrumbs?: Array<{ name: string; url: string }>;
+  video?: {
+    src: string;
+    name?: string;
+    description?: string;
+    thumbnailUrl?: string;
+    uploadDate?: Date;
+    duration?: string;
+  };
 }
 
 const { 
@@ -37,7 +46,9 @@ const {
   modifiedDate,
   author,
   tags,
-  categories
+  categories,
+  breadcrumbs,
+  video,
 } = Astro.props;
 ---
 
@@ -78,16 +89,19 @@ const {
       author={author}
       tags={tags}
       categories={categories}
+      breadcrumbs={breadcrumbs}
+      video={video}
     />
   
   
     
   </head>
   <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen flex flex-col">
+    <a href="#main-content" class="skip-link">Skip to content</a>
     <Header />
     
     <!-- Main content area with conditional width -->
-    <main class="grow w-full">
+    <main id="main-content" class="grow w-full" tabindex="-1">
       <div class={wideContent ? "w-full" : "max-w-5xl mx-auto px-4 sm:px-6"}>
         <slot />
       </div>
@@ -96,6 +110,16 @@ const {
     <!-- Full-width footer -->
     <Footer />
     <script>
+      const syncThemeToggles = () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach((toggle) => {
+          toggle.setAttribute('aria-pressed', String(isDark));
+          toggle.setAttribute('aria-label', 'Switch to ' + (isDark ? 'light' : 'dark') + ' mode');
+        });
+      };
+
+      syncThemeToggles();
+
       document.addEventListener('click', (event) => {
         const toggle = event.target instanceof Element ? event.target.closest('[data-theme-toggle]') : null;
         if (!toggle) return;
@@ -103,7 +127,27 @@ const {
         const isDark = !document.documentElement.classList.contains('dark');
         document.documentElement.classList.toggle('dark', isDark);
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        syncThemeToggles();
       });
     </script>
+    <style is:global>
+      .skip-link {
+        position: fixed;
+        top: 0.5rem;
+        left: 0.5rem;
+        z-index: 100;
+        transform: translateY(-150%);
+        border-radius: 0.375rem;
+        background: #fff;
+        color: #111827;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        transition: transform 150ms ease;
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+    </style>
   </body>
 </html>

@@ -1,20 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
 import Hero from '@components/widgets/Hero.astro';
 import Layout from '@layouts/Layout.astro';
 import PostCard from '@components/blog/PostCard.astro';
 import PopularTopics from '@components/blog/PopularTopics.astro';
 import { siteConfig } from '@config/site';
+import { getPublishedPosts, sortPostsByDate } from '@utils/content';
 
 // Get all blog posts and sort by date (newest first)
-const posts = await getCollection('posts', ({ data }) => {
-  return !data.draft;
-});
-
-// Sort posts by date (newest first)
-const sortedPosts = posts.sort((a, b) => {
-  return new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime();
-});
+const sortedPosts = sortPostsByDate(await getPublishedPosts());
 
 // Get the latest 6 posts for the homepage
 const latestPosts = sortedPosts.slice(0, 6);
@@ -25,7 +18,7 @@ const latestPosts = sortedPosts.slice(0, 6);
   description={siteConfig.description}
   wideContent={true}
 >
-  <main class="w-full py-8">
+  <div class="w-full py-8">
     <!-- Hero Section -->
     <Hero /> 
         <!-- Browse Categories Section -->
@@ -95,5 +88,5 @@ const latestPosts = sortedPosts.slice(0, 6);
     </section>
     
 
-  </main>
+  </div>
 </Layout>

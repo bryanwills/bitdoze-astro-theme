@@ -1,27 +1,23 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import PostCard from '@components/blog/PostCard.astro';
 import Pagination from '@components/common/Pagination.astro';
 import { getPagination } from '@utils/pagination';
 import { siteConfig } from '@config/site';
 import { slugify } from '@utils/slug';
+import { getPublishedPosts, sortPostsByDate } from '@utils/content';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts', ({ data }) => {
-    return !data.draft;
-  });
+  const posts = await getPublishedPosts();
   
   // Get all unique tags
   const tags = [...new Set(posts.flatMap(post => post.data.tags || []))];
   
   return tags.map(tag => {
     // Filter posts by tag
-    const tagPosts = posts.filter(post => 
+    const tagPosts = sortPostsByDate(posts.filter(post =>
       post.data.tags && post.data.tags.includes(tag)
-    ).sort((a, b) => {
-      return new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime();
-    });
+    ));
     
     return {
       params: { tag: slugify(tag) },

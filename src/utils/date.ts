@@ -4,9 +4,10 @@
  * @returns Formatted date string (e.g., "February 26, 2025")
  */
 export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat(siteConfig.lang, {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   }).format(date);
 }
+import { siteConfig } from "@config/site";

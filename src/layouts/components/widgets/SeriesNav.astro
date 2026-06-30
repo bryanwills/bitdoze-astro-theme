@@ -1,32 +1,26 @@
 ---
-import { getCollection } from 'astro:content';
 import { getPostSlug, getPostUrl } from '@utils/slug';
+import { getPublishedPosts } from '@utils/content';
 
 export interface Props {
   currentSlug: string;
   seriesName: string;
-  seriesPosition: string;
+  seriesPosition: number;
 }
 
 const { currentSlug, seriesName, seriesPosition } = Astro.props;
 
-// Get all posts (including drafts for preview purposes)
-const allPosts = await getCollection('posts');
+const allPosts = await getPublishedPosts();
 
 // Filter posts that are part of the same series and sort them by position
 const seriesPosts = allPosts
   .filter(post => {
     // Check if the post has series data and it matches our series name
-    return post.data.series && 
-           Array.isArray(post.data.series) && 
-           post.data.series.length === 2 && 
-           post.data.series[0] === seriesName;
+    return post.data.series?.name === seriesName;
   })
   .sort((a, b) => {
     // Sort by the series position (second element in the array)
-    const posA = parseInt(a.data.series[1] || '0');
-    const posB = parseInt(b.data.series[1] || '0');
-    return posA - posB;
+    return (a.data.series?.position ?? 0) - (b.data.series?.position ?? 0);
   });
 
 // Get current post index in the series
@@ -73,7 +67,7 @@ const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentInde
     ))}
   </div>
   
-  <div class="mt-5 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between">
+  <div class="mt-5 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-wrap justify-between gap-4">
     {prevPost ? (
       <a href={getPostUrl(prevPost)} class="flex items-center text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

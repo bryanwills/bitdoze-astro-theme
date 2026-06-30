@@ -7,7 +7,9 @@ image: "../../assets/images/astro-basics.svg"
 authors: ["dragos"]
 categories: ["Web Development"]
 tags: ["astro", "jamstack", "static-site-generator"]
-series: ["Astro Get Started", "1"]
+series:
+  name: "Astro Get Started"
+  position: 1
 ---
 
 ## What is Astro?

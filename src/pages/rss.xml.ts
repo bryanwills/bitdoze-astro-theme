@@ -1,15 +1,11 @@
 import rss from '@astrojs/rss';
-import { getCollection } from 'astro:content';
 import { siteConfig } from '@config/site';
 import { getPostUrl } from '@utils/slug';
+import { getPublishedPosts, sortPostsByDate } from '@utils/content';
+import type { APIContext } from 'astro';
 
-export async function GET(context) {
-  const posts = await getCollection('posts');
-  
-  // Sort posts by date (newest first)
-  const sortedPosts = posts.sort((a, b) => {
-    return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
-  });
+export async function GET(context: APIContext) {
+  const sortedPosts = sortPostsByDate(await getPublishedPosts());
 
   return rss({
     title: siteConfig.title, // Updated from siteConfig.name

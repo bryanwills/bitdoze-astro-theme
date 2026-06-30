@@ -7,7 +7,9 @@ image: "../../assets/images/astro-components.svg"
 authors: ["dragos"]
 categories: ["Web Development"]
 tags: ["astro", "jamstack", "components", "markdown"]
-series: ["Astro Get Started", "2"]
+series:
+  name: "Astro Get Started"
+  position: 2
 ---
 
 ## Building with Astro Components

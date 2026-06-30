@@ -1,23 +1,21 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
 import Breadcrumb from '@layouts/components/common/Breadcrumb.astro';
 import { siteConfig } from '@config/site'; // Import siteConfig
 import { getPostUrl } from '@utils/slug';
+import { getPublishedPosts } from '@utils/content';
 
 // Get all posts
-const allPosts = await getCollection('posts', ({ data }) => {
-  return !data.draft;
-});
+const allPosts = await getPublishedPosts();
 
 // Extract series information
 const seriesMap = new Map();
 
 allPosts.forEach(post => {
-  if (post.data.series && Array.isArray(post.data.series) && post.data.series.length === 2) {
-    const seriesName = post.data.series[0];
-    const seriesPosition = post.data.series[1];
+  if (post.data.series) {
+    const seriesName = post.data.series.name;
+    const seriesPosition = post.data.series.position;
     
     if (!seriesMap.has(seriesName)) {
       seriesMap.set(seriesName, []);
@@ -35,23 +33,11 @@ allPosts.forEach(post => {
 });
 
 // Sort each series by position
-for (const [seriesName, posts] of seriesMap.entries()) {
+for (const posts of seriesMap.values()) {
   posts.sort((a: any, b: any) => {
     // First try to sort by position (if they're numbers)
-    const posA = parseInt(a.position);
-    const posB = parseInt(b.position);
-    
-    if (!isNaN(posA) && !isNaN(posB)) {
-      return posA - posB;
-    }
-    
-    // Fall back to string comparison of position
-    if (a.position !== b.position) {
-      return a.position.localeCompare(b.position);
-    }
-    
-    // If positions are equal or not comparable, sort by date
-    return new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
+    return a.position - b.position ||
+      new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
   });
 }
 
@@ -75,8 +61,9 @@ const breadcrumbs = [
 <Layout 
   title={`Article Series | ${siteConfig.title}`}
   description="Browse our collection of article series on various topics"
+  breadcrumbs={breadcrumbs}
 >
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+  <div class="max-w-5xl mx-auto py-12">
     <!-- Breadcrumb Navigation -->
     <Breadcrumb items={breadcrumbs} className="mb-6" />
     
@@ -107,7 +94,7 @@ const breadcrumbs = [
             
             <div class="mt-6">
               <ol class="relative border-l border-gray-300 dark:border-gray-700 ml-3">
-                {series.posts.map((post: any, index: number) => (
+                {series.posts.map((post: any) => (
                   <li class="mb-6 ml-6">
                     <span class="absolute flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full -left-4 ring-4 ring-white dark:ring-gray-800 text-blue-600 dark:text-blue-400">
                       {post.position}

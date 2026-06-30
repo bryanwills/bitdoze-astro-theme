@@ -58,8 +58,8 @@ The theme includes several reusable components:
 
 ### Prerequisites
 
-- Node.js (version 16.12.0 or higher)
-- npm, yarn, or pnpm
+- Node.js 22.12.0 or newer
+- npm 10.8.2 or newer
 
 ### Installation
 
@@ -86,34 +86,23 @@ The theme includes several reusable components:
 Tailor the theme to your needs by updating the following configuration files:
 
 1.  **Site URL**:
-    *   Set your production site URL in `astro.config.mjs`. Look for the `site` property:
-        ```javascript
-        // astro.config.mjs
-        export default defineConfig({
-          site: 'https://your-domain.com', 
-          // ...
-        });
-        ```
+    *   Set the `SITE_URL` environment variable in production. It falls back to `https://www.bitdoze.com` for local builds.
 2.  **Primary Site Metadata & Settings**:
     *   Update `src/config/site.ts` for essential site details such as:
         *   `title`: The main title of your site.
         *   `description`: A brief description for SEO and metadata.
         *   `author`: Default author name.
-        *   `logoText`: Text displayed next to the logo (if applicable).
+        *   `brandName`, `logo`, and logo dimensions.
+        *   Hero and footer descriptions.
         *   `ogImage`: Path to your default OpenGraph image.
         *   `postsPerPage`: Number of posts to display on paginated pages.
-        *   `summaryLength`: Default length for post summaries.
-        *   `copyright`: Copyright notice.
 3.  **Menus**:
     *   Modify `src/config/menu.json` to define navigation links for the header and footer.
 4.  **Social Media Links**:
     *   Update `src/config/social.json` with your social media profile URLs.
-5.  **Other Specific Configurations (`src/config/config.json`)**:
-    *   The `src/config/config.json` file holds some remaining specific parameters:
-        *   `site.favicon`: Path to your `.ico` favicon.
-        *   `site.trailing_slash`: Whether to use trailing slashes in URLs (Astro also handles this).
-        *   `params.contact_form_action`: URL endpoint for the contact form (if used).
-        *   `contactinfo`: Your address, email, and phone number for display.
+5.  **Contact Configuration (`src/config/config.json`)**:
+    *   Set `params.contact_form_action` to your form endpoint.
+    *   Add only the public address, email, and phone details you want displayed.
 
 ### Creating Content
 
@@ -131,7 +120,12 @@ image: "../../assets/images/your-image.jpg"
 authors: ["author-id"]
 categories: ["category-name"]
 tags: ["tag1", "tag2"]
-series: ["Series Name", "Part Number"]
+series:
+  name: "Series Name"
+  position: 1
+slug: "optional/custom-path"
+canonical: "https://example.com/original-article/"
+draft: false
 ---
 
 Your post content goes here...
@@ -187,6 +181,16 @@ Build your site for production:
 ```bash
 npm run build
 ```
+
+Run the complete local verification suite:
+
+```bash
+npm run verify
+```
+
+This runs Astro type checking, unit tests, and the production build. Draft and
+future-dated posts are excluded from routes, search, RSS, series navigation,
+and homepage widgets.
 
 The built site will be in the `dist/` directory, ready to be deployed to your favorite hosting platform.
 

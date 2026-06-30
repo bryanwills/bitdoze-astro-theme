@@ -30,6 +30,10 @@ html {
   scroll-behavior: smooth;
 }
 
+.prose :is(h2, h3, h4) {
+  scroll-margin-top: 5rem;
+}
+
 body {
   font-family: var(--font-sans);
 }
@@ -101,4 +105,19 @@ body {
 
 .dark .prose table::-webkit-scrollbar-thumb {
   background: theme(colors.gray.500);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

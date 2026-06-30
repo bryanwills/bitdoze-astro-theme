@@ -1,14 +1,12 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '@config/site';
 import { slugify } from '@utils/slug';
+import { getPublishedPosts } from '@utils/content';
 
 // Get all blog posts
-const posts = await getCollection('posts', ({ data }) => {
-  return !data.draft;
-});
+const posts = await getPublishedPosts();
 
 // Get all unique categories and count posts for each
 const categories = [...new Set(posts.flatMap(post => post.data.categories || []))];

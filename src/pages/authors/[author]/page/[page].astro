@@ -1,16 +1,14 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import PostCard from '@components/blog/PostCard.astro';
 import Pagination from '@components/common/Pagination.astro';
 import { getPagination } from '@utils/pagination';
 import { siteConfig } from '@config/site';
 import { slugify } from '@utils/slug';
+import { getPublishedPosts, sortPostsByDate } from '@utils/content';
 
-export async function getStaticPaths({ paginate }) {
-  const posts = await getCollection('posts', ({ data }) => {
-    return !data.draft;
-  });
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
   
   // Get all unique authors
   const authors = [...new Set(posts.flatMap(post => post.data.authors || []))];
@@ -18,11 +16,9 @@ export async function getStaticPaths({ paginate }) {
   // Create paths for each author and its pages
   return authors.flatMap(author => {
     // Filter posts by author
-    const authorPosts = posts.filter(post => 
+    const authorPosts = sortPostsByDate(posts.filter(post =>
       post.data.authors && post.data.authors.includes(author)
-    ).sort((a, b) => {
-      return new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime();
-    });
+    ));
     
     // Generate pages for this author
     const totalPages = Math.ceil(authorPosts.length / siteConfig.postsPerPage);
@@ -49,7 +45,7 @@ export async function getStaticPaths({ paginate }) {
 }
 
 const { author, posts, page, count } = Astro.props;
-const currentPage = parseInt(page);
+const currentPage = Number(page);
 const basePath = `/authors/${slugify(author)}`;
 
 // Get pagination data

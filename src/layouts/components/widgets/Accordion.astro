@@ -21,8 +21,8 @@ const { label, group = 'default', expanded = false } = Astro.props;
 </details>
 
 <script>
-  if (!window.__accordionInitialized) {
-    window.__accordionInitialized = true;
+  if (document.documentElement.dataset.accordionInitialized !== 'true') {
+    document.documentElement.dataset.accordionInitialized = 'true';
     document.addEventListener(
       'toggle',
       (e) => {

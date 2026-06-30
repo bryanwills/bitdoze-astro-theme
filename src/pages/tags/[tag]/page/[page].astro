@@ -1,16 +1,14 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import PostCard from '@components/blog/PostCard.astro';
 import Pagination from '@components/common/Pagination.astro';
 import { getPagination } from '@utils/pagination';
 import { siteConfig } from '@config/site';
 import { slugify } from '@utils/slug';
+import { getPublishedPosts, sortPostsByDate } from '@utils/content';
 
-export async function getStaticPaths({ paginate }) {
-  const posts = await getCollection('posts', ({ data }) => {
-    return !data.draft;
-  });
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
   
   // Get all unique tags
   const tags = [...new Set(posts.flatMap(post => post.data.tags || []))];
@@ -18,11 +16,9 @@ export async function getStaticPaths({ paginate }) {
   // Create paths for each tag and its pages
   return tags.flatMap(tag => {
     // Filter posts by tag
-    const tagPosts = posts.filter(post => 
+    const tagPosts = sortPostsByDate(posts.filter(post =>
       post.data.tags && post.data.tags.includes(tag)
-    ).sort((a, b) => {
-      return new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime();
-    });
+    ));
     
     // Generate pages for this tag
     const totalPages = Math.ceil(tagPosts.length / siteConfig.postsPerPage);
@@ -49,7 +45,7 @@ export async function getStaticPaths({ paginate }) {
 }
 
 const { tag, posts, page, count } = Astro.props;
-const currentPage = parseInt(page);
+const currentPage = Number(page);
 const basePath = `/tags/${slugify(tag)}`;
 
 // Get pagination data

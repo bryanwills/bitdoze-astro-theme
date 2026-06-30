@@ -1,6 +1,6 @@
-import { getCollection } from 'astro:content';
 import { formatDate } from '@utils/date';
 import { getPostSlug } from '@utils/slug';
+import { getPublishedPosts } from '@utils/content';
 
 const MAX_INDEXED_CONTENT_LENGTH = 1200;
 
@@ -14,7 +14,7 @@ function excerptContent(content = '') {
 
 export async function GET() {
   // Get all posts
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const posts = await getPublishedPosts();
 
   // Format posts for search
   const searchData = posts.map(post => {

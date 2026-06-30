@@ -29,8 +29,8 @@ const thumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault
 </div>
 
 <script>
-  if (!window.__youtubeEmbedInitialized) {
-    window.__youtubeEmbedInitialized = true;
+  if (document.documentElement.dataset.youtubeEmbedInitialized !== 'true') {
+    document.documentElement.dataset.youtubeEmbedInitialized = 'true';
     document.addEventListener('click', (event) => {
       const button = event.target instanceof Element ? event.target.closest('.youtube-play') : null;
       if (!button) return;

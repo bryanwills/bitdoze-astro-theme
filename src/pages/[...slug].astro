@@ -1,17 +1,29 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import PostLayout from '@layouts/PostLayout.astro';
 // Import all widget components for MDX files
 import * as MarkdownComponents from '@layouts/components/MarkdownComponents.astro';
 import { getPostSlug } from '@utils/slug';
+import { getPublishedPages, getPublishedPosts } from '@utils/content';
 
 // Get all blog posts
 export async function getStaticPaths() {
-  const posts = await getCollection('posts');
+  const posts = await getPublishedPosts();
+  const pages = await getPublishedPages();
+  const reservedPaths = new Set([
+    'about', 'authors', 'blog', 'categories', 'contact', 'search', 'series', 'tags',
+    ...pages.map((page) => page.id.replace(/\.(md|mdx)$/i, '')),
+  ]);
+  const seen = new Set<string>();
   
   return posts.map(post => {
+    const slug = getPostSlug(post);
+    if (reservedPaths.has(slug) || seen.has(slug)) {
+      throw new Error(`Duplicate or reserved post route: /${slug}/`);
+    }
+    seen.add(slug);
     return {
-      params: { slug: getPostSlug(post) },
+      params: { slug },
       props: { post },
     };
   });

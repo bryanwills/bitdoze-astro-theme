@@ -1,8 +1,8 @@
 ---
-import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import { formatDate } from '@utils/date';
 import { getPostSlug, getPostUrl, slugify } from '@utils/slug';
+import { getPublishedPosts } from '@utils/content';
 
 interface Props {
   currentPost: any;
@@ -10,9 +10,9 @@ interface Props {
 }
 
 const { currentPost, limit = 3 } = Astro.props;
-const allPosts = await getCollection('posts');
+const allPosts = await getPublishedPosts();
 const currentSlug = getPostSlug(currentPost);
-const otherPosts = allPosts.filter(post => getPostSlug(post) !== currentSlug && !post.data.draft);
+const otherPosts = allPosts.filter(post => getPostSlug(post) !== currentSlug);
 
 function getRelatedPosts(current: any, posts: any[], max: number) {
   const currentTags = current.data.tags || [];

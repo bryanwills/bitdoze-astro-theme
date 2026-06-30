@@ -1,35 +1,23 @@
-// Site configuration
+import logo from "@assets/favicons/bitdoze_logo_better.svg";
+
 export const siteConfig = {
-  // Language setting
   lang: "en",
-  
-  // Site details from config.json:site
-  title: "Bit Doze Astro Blog Theme", // from config.json:site.title
-  // description is used from existing site.ts, will be updated by config.json:metadata.meta_description
-  // url is removed, Astro.site will be used
-
-  // from config.json:site (logo related)
-  logo: "/logo.svg",
-  logoWidth: "200",
-  logoHeight: "30",
+  locale: "en_US",
+  title: "Bit Doze Astro Blog Theme",
+  brandName: "Bit Doze",
+  logo,
+  logoWidth: 160,
+  logoHeight: 40,
   logoText: "Bit Doze Astro Blog Theme",
-
-  // SEO metadata from config.json:metadata
-  author: "Your Name", // from config.json:metadata.meta_author
-  description: "A modern, responsive blog theme for Astro with support for tags, categories, and series.", // from config.json:metadata.meta_description
+  author: "Dragos Balota",
+  description: "A modern, responsive blog theme for Astro with support for tags, categories, and series.",
+  heroDescription: "Join the community to learn more about VPS hosting, blogging, and modern content management.",
+  footerDescription: "Practical resources and tutorials for web developers and technology enthusiasts.",
   ogImage: "/images/og-image.svg",
-
-  // Pagination settings from config.json:settings
-  postsPerPage: 11, // from config.json:settings.pagination
-  summaryLength: 100, // from config.json:settings.summary_length
-  
-  // SEO settings (existing in site.ts)
+  postsPerPage: 11,
   noindex: {
-    tags: true, // Set to true to add noindex meta tag to tag pages
-    categories: false, // Set to true to add noindex meta tag to category pages
-    authors: false, // Set to true to add noindex meta tag to author pages
+    tags: true,
+    categories: false,
+    authors: false,
   },
-  
-  // Params from config.json:params
-  copyright: "Copyright © 2025", // from config.json:params.copyright
-};
+} as const;

@@ -7,7 +7,9 @@ image: "../../assets/images/astro-deployment.svg"
 authors: ["dragos"]
 categories: ["Web Development"]
 tags: ["astro", "jamstack", "deployment", "optimization"]
-series: ["Astro Get Started", "3"]
+series:
+  name: "Astro Get Started"
+  position: 3
 ---
 
 ## Deploying Your Astro Site

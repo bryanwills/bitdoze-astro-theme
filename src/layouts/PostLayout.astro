@@ -10,32 +10,43 @@ import SeriesNav from '@layouts/components/widgets/SeriesNav.astro';
 import ReadingProgress from '@layouts/components/blog/ReadingProgress.astro';
 import Breadcrumb from '@layouts/components/common/Breadcrumb.astro';
 import { getPostSlug, slugify } from '@utils/slug';
+import { getPublishedAuthors } from '@utils/content';
 
 const { post, headings } = Astro.props;
-const { title, description, image, date, categories, authors, tags, series } = post.data;
+const { title, meta_title, description, image, imageAlt, date, updatedDate, categories, authors, tags, series, canonical } = post.data;
 
-const canonicalURL = Astro.site 
+const pageURL = Astro.site
   ? new URL(Astro.url.pathname, Astro.site).toString()
   : Astro.url.pathname;
+const canonicalURL = canonical ?? pageURL;
+const primaryAuthor = authors?.[0];
+const authorEntry = primaryAuthor
+  ? (await getPublishedAuthors()).find((entry) => slugify(entry.data.title) === slugify(primaryAuthor))
+  : undefined;
+const schemaAuthor = primaryAuthor ? {
+  name: authorEntry?.data.title ?? primaryAuthor,
+  url: Astro.site ? new URL('/authors/' + slugify(primaryAuthor) + '/', Astro.site).toString() : undefined,
+} : undefined;
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Blog', url: '/blog/' },
   ...(categories?.length ? [{ name: categories[0], url: `/categories/${slugify(categories[0])}/` }] : []),
-  { name: title, url: canonicalURL }
+  { name: title, url: pageURL }
 ];
 
-const hasSeries = series && Array.isArray(series) && series.length === 2;
+const hasSeries = Boolean(series);
 ---
 
 <Layout
-  title={title}
+  title={meta_title ?? title}
   description={description}
   image={image?.src}
   article={true}
   canonical={canonicalURL}
   publishDate={date}
-  author={authors?.[0] ? { name: authors[0] } : undefined}
+  modifiedDate={updatedDate}
+  author={schemaAuthor}
   tags={tags}
   categories={categories}
   breadcrumbs={breadcrumbs}
@@ -78,7 +89,7 @@ const hasSeries = series && Array.isArray(series) && series.length === 2;
       
       {image && (
         <div class="rounded-lg overflow-hidden mb-8 aspect-video">
-          <Image src={image} alt={title} class="w-full h-full object-cover" width={1280} height={720} loading="eager" decoding="async" />
+          <Image src={image} alt={imageAlt ?? title} class="w-full h-full object-cover" widths={[640, 960, 1280]} sizes="(max-width: 1024px) 100vw, 1024px" width={1280} height={720} loading="eager" decoding="async" fetchpriority="high" />
         </div>
       )}
       
@@ -93,13 +104,13 @@ const hasSeries = series && Array.isArray(series) && series.length === 2;
       )}
     </header>
     
-    {hasSeries && <SeriesNav currentSlug={getPostSlug(post)} seriesName={series[0]} seriesPosition={series[1]} />}
+    {hasSeries && series && <SeriesNav currentSlug={getPostSlug(post)} seriesName={series.name} seriesPosition={series.position} />}
     
     <div class="mb-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
       <PostHeadings headings={headings} />
     </div>
     
-    <div class="prose prose-lg dark:prose-invert prose-blue max-w-none">
+    <div class="prose prose-lg dark:prose-invert prose-blue max-w-3xl mx-auto">
       <slot />
     </div>
     
